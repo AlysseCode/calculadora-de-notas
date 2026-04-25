@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %} {% from "components/course_header.html" import
+course_header %} {% from "components/evaluation_accordion.html" import
+evaluation_accordion %} {% from "components/chart_basic.html" import chart_basic
+%} {% from "components/chart_advanced.html" import chart_advanced %} {% block
+extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/course-detail.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/landing.css') }}"
+/>
+{% endblock %} {% block navbar %}
+<!-- Sin navbar en la página del curso -->
+{% endblock %} {% block title %}{{ course_name }} - Calculadora de Notas{%
+endblock %} {% block content %}
+
+<!-- Course Header -->
+{{ course_header(course_name, course_code, icon_gradient, icon_svg) }}
+
+<!-- Main Content -->
+<div class="course-content" data-course-code="{{ course_code }}">
+  <!-- Left Side: Chart Area (70%) -->
+  <div class="chart-section">
+    <div class="chart-container">
+      <!-- Basic Mode Chart -->
+      {{ chart_basic() }}
+
+      <!-- Advanced Mode Chart -->
+      {{ chart_advanced() }}
+    </div>
+  </div>
+
+  <!-- Right Side: Evaluations Panel (35%) -->
+  <div class="evaluations-section">
+    <div class="evaluations-header">
+      <h2 class="evaluations-title">Evaluaciones</h2>
+    </div>
+
+    <!-- Certámenes -->
+    {% for eval in model.evaluations %} {{ evaluation_accordion(eval) }} {%
+    endfor %}
+  </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="{{ url_for('static', filename='js/course_detail.js') }}"></script>
+{% endblock %}
