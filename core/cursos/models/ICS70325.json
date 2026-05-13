@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "code": "ICS70325",
+    "name": "ADMINISTRACIÓN Y SOSTENIBILIDAD ORGANIZACIONAL",
+    "icon": {
+      "gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+      "svg": "book"
+    }
+  },
+  "evaluations": [
+    "Certamen 1",
+    "Control de lectura",
+    "ACTIVIDAD EVALUADA EN CLASES 1",
+    "ACTIVIDAD EVALUADA EN CLASES 2",
+    "PRESENTACIÓN PROYECTO FINAL"
+  ],
+  "context": {
+    "values": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "templates": {
+      "Certamen": [
+        0
+      ],
+      "Control lectura": [
+        1
+      ],
+      "Actividad evaluada en clases": [
+        2,
+        3
+      ],
+      "Presentación proyecto final": [
+        4
+      ]
+    }
+  },
+  "AST": {
+    "op": "linear_comb",
+    "weights": [
+      0.25,
+      0.25,
+      0.15,
+      0.15,
+      0.20
+    ],
+    "args": [
+      {
+        "op": "ref",
+        "id": 0
+      },
+      {
+        "op": "ref",
+        "id": 1
+      },
+      {
+        "op": "ref",
+        "id": 2
+      },
+      {
+        "op": "ref",
+        "id": 3
+      },
+      {
+        "op": "ref",
+        "id": 4
+      }
+    ]
+  }
+}

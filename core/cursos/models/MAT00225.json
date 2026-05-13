@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "code": "MAT00225",
+    "name": "Calculo en Varias Variables",
+    "icon": {
+      "gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+      "svg": "doble-integral"
+    }
+  },
+  "evaluations": [
+    "Certamen 1",
+    "Certamen 2",
+    "Certamen 3",
+    "Control 1",
+    "Control 2",
+    "Control 3"
+  ],
+  "context": {
+    "values": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "templates": {
+      "Certamen": [
+        0,
+        1,
+        2
+      ],
+      "Control": [
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "AST": {
+    "op": "linear_comb",
+    "weights": [
+      0.75,
+      0.25
+    ],
+    "args": [
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref_template",
+            "template": "Certamen"
+          }
+        ]
+      },
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref_template",
+            "template": "Control"
+          }
+        ]
+      }
+    ]
+  }
+}

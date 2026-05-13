@@ -2,6 +2,14 @@
 
 Aplicación web para gestionar y visualizar calificaciones de cursos universitarios. Desarrollada con Flask para proporcionar una interfaz moderna y accesible a los estudiantes de la Universidad Técnica Federico Santa María.
 
+> [!WARNING]
+> Este repositorio es un fork rapido de la version original de [@lyoss-usm](https://github.com/lyoss-usm)
+> Este fork no tiene intencion de ser un proyecto serio y/o oficial simplemente es un apaño mientras el real
+> esta en pausa y porque necesitaba esto funcionando para uso personal, si necesitas tus notas dentro del sistema
+> pronto intentare implementar el sistema para poder enviar tus formulas de promediado y asi que mas gente lo pueda usar
+> pero no es mi prioridad, y si acabo desarrollandolo va a ser para uso en el proyecto de lyoss principalmente
+> si quieren ayudar en algo pueden hacerlo pero preferiria personalmente que fueran directamente a la iniciativa de lyoss
+
 ## Instalación
 
 ### 1. Clonar el repositorio

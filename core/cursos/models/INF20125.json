@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "code": "INF20125",
+    "name": "Programación Avanzada",
+    "icon": {
+      "gradient": "linear-gradient(90deg,rgba(247, 20, 130, 1) 0%, rgba(237, 83, 168, 1) 100%)",
+      "svg": "codigo"
+    }
+  },
+  "evaluations": [
+    "Certamen 1",
+    "Certamen 2",
+    "Tarea 1",
+    "Tarea 2",
+    "Listado"
+  ],
+  "context": {
+    "values": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "templates": {
+      "Certamen": [
+        0,
+        1
+      ],
+      "Tarea": [
+        2,
+        3
+      ],
+      "Listado": [
+        4
+      ]
+    }
+  },
+  "AST": {
+    "op": "linear_comb",
+    "weights": [
+      0.3,
+      0.3,
+      0.2,
+      0.2
+    ],
+    "args": [
+      {
+        "op": "ref",
+        "id": 0
+      },
+      {
+        "op": "ref",
+        "id": 1
+      },
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref_template",
+            "template": "Tarea"
+          }
+        ]
+      },
+      {
+        "op": "ref",
+        "id": 4
+      }
+    ]
+  }
+}

@@ -3,19 +3,21 @@ Web routes for Flask application.
 Frontend-only routes for the landing page.
 Backend API routes will be added in future iterations.
 """
-from flask import Blueprint, render_template, abort, request, jsonify
+
+from flask import Blueprint, render_template, abort, request, jsonify, current_app
 from core.cursos.repository import load_course, list_courses
 from core.analisis.roots import find_curva_nivel, find_nota_necesaria, fill_empty_evals
 import json
+import os
 import typing
 import copy
 import math
 
 
-bp = Blueprint('main', __name__)
+bp = Blueprint("main", __name__)
 
 
-@bp.route('/')
+@bp.route("/")
 def index():
     """Landing page with hero section and courses list."""
     raw = list_courses(n=10)
@@ -26,7 +28,9 @@ def index():
         title = meta.get("name") or c.get("name") or "Sin nombre"
         code = meta.get("code") or "XXX-000"
         icon = meta.get("icon", {}) or {}
-        icon_gradient = icon.get("gradient", "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)")
+        icon_gradient = icon.get(
+            "gradient", "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+        )
         icon_file = icon.get("svg", "book")
 
         try:
@@ -39,23 +43,29 @@ def index():
         evals = c.get("evaluations", []) or []
 
         evals_l = [str(e).strip().lower() for e in evals]
-        certamenes = any("certamen" in e or (len(e) > 0 and e[0] == "c") for e in evals_l)
-        controles = any("control" in e or e.startswith("q") or e.startswith("ca") for e in evals_l)
+        certamenes = any(
+            "certamen" in e or (len(e) > 0 and e[0] == "c") for e in evals_l
+        )
+        controles = any(
+            "control" in e or e.startswith("q") or e.startswith("ca") for e in evals_l
+        )
         tareas = any("tarea" in e or e.startswith("t") for e in evals_l)
         proyecto = any("proyecto" in e or e.startswith("p") for e in evals_l)
         laboratorio = any("laboratorio" in e or e.startswith("l") for e in evals_l)
 
-        courses.append({
-            "title": title,
-            "code": code,
-            "icon_gradient": icon_gradient,
-            "icon_svg": icon_svg,
-            "certamenes": certamenes,
-            "controles": controles,
-            "tareas": tareas,
-            "proyecto": proyecto,
-            "laboratorio": laboratorio,
-        })
+        courses.append(
+            {
+                "title": title,
+                "code": code,
+                "icon_gradient": icon_gradient,
+                "icon_svg": icon_svg,
+                "certamenes": certamenes,
+                "controles": controles,
+                "tareas": tareas,
+                "proyecto": proyecto,
+                "laboratorio": laboratorio,
+            }
+        )
 
     return render_template("index.html", courses=courses)
 
@@ -85,16 +95,71 @@ def course_detail(course_code):
         course_code=meta["code"],
         icon_gradient=meta["icon"]["gradient"],
         icon_svg=icon_svg,
-        model=course
+        model=course,
     )
+
 
 @bp.route("/curso/add")
 def add_course():
     return render_template("add_course.html")
 
+
+@bp.route("/api/curso/create", methods=["POST"])
+def create_ramo():
+    datos = request.get_json()
+
+    nombre = datos.get("nombre")
+    sigla = datos.get("sigla")
+    evaluaciones = datos.get("evaluaciones")
+    reglas = datos.get("reglas")
+    formula = datos.get("formula")
+
+    evals = []
+    templates = {}
+    values = []
+    for evaluacion in evaluaciones:
+        if evaluaciones[evaluacion] <= 0:
+            continue
+        templates[evaluacion] = []
+
+        for i in range(evaluaciones[evaluacion]):
+            evals.append(f"{evaluacion} {i + 1}")
+            templates[evaluacion].append(evaluaciones[evaluacion])
+            values.append(None)
+    # Voy a hacer la version visual que funcione bien pronto, confia.
+
+    curso = {
+        "meta": {
+            "code": sigla,
+            "name": nombre,
+            # Generico por ahora sorry D:
+            "icon": {
+                "gradient": "linear-gradient(135deg, #2ea332 0%, #1c8a27 100%)",
+                "svg": "<svg>...</svg>",
+            },
+        },
+        "evaluaciones": evals,
+        "context": {
+            "values": values,
+            "templates": templates,
+        },
+        "AST": formula,  # Lazy ass solution XD,
+    }
+
+    if os.getenv("FLASK_ENV", "development") != "production":
+        ruta = os.path.join(current_app.root_path, "../core/cursos/models/")
+
+        with open(f"{ruta}{sigla}.json", "w") as wf:
+            wf.write(json.dumps(curso, indent=4))
+
+        return jsonify({"download": False, "data": curso})
+    else:
+        return jsonify({"download": True, "data": curso})
+
+
 @bp.route("/api/grades/<course_code>", methods=["POST"])
 def save_grades(course_code):
-    '''
+    """
     Requests JSON with:
     ```
     {
@@ -114,7 +179,7 @@ def save_grades(course_code):
         "needed_grade": float or "--"
     }
     ```
-    '''
+    """
     data = request.get_json()
 
     goal = data.get("goal", 55.0)
@@ -133,16 +198,17 @@ def save_grades(course_code):
     out = {
         "success": True,
         "message": "",
-
         "current_grade": 0.0,
         "max_grade": 0.0,
-        "needed_grade": 0.0
+        "needed_grade": 0.0,
     }
 
     nota_necesaria = find_nota_necesaria(course, empty_vals, goal)
 
     if nota_necesaria is None or nota_necesaria > 100.0:
-        out["message"] = "No es posible alcanzar la nota objetivo con las evaluaciones restantes."
+        out["message"] = (
+            "No es posible alcanzar la nota objetivo con las evaluaciones restantes."
+        )
         out["success"] = False
         out["needed_grade"] = "--"
     else:
@@ -154,15 +220,16 @@ def save_grades(course_code):
     out["max_grade"] = round(max_grade)
 
     print(json.dumps(out, indent=4, ensure_ascii=False))
-    
+
     return jsonify(out)
+
 
 @bp.route("/api/grades/<course_code>/contour", methods=["POST"])
 def grade_contour(course_code):
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({"error": "JSON inválido o ausente"}), 400
-    
+
     required = {"grades", "x_indices", "y_indices", "target_grade"}
     if not required.issubset(data):
         faltan = sorted(list(required - set(data.keys())))
@@ -175,13 +242,21 @@ def grade_contour(course_code):
 
     if not isinstance(grades, list):
         return jsonify({"error": "grades debe ser una lista"}), 400
-    if not isinstance(x_indices, list) or not all(isinstance(i, int) for i in x_indices):
-        return jsonify({"error": "x_indices debe ser una lista de enteros (0-based)"}), 400
-    if not isinstance(y_indices, list) or not all(isinstance(i, int) for i in y_indices):
-        return jsonify({"error": "y_indices debe ser una lista de enteros (0-based)"}), 400
+    if not isinstance(x_indices, list) or not all(
+        isinstance(i, int) for i in x_indices
+    ):
+        return jsonify(
+            {"error": "x_indices debe ser una lista de enteros (0-based)"}
+        ), 400
+    if not isinstance(y_indices, list) or not all(
+        isinstance(i, int) for i in y_indices
+    ):
+        return jsonify(
+            {"error": "y_indices debe ser una lista de enteros (0-based)"}
+        ), 400
     if not isinstance(target, (int, float)) or not math.isfinite(float(target)):
         return jsonify({"error": "target_grade inválida"}), 400
-    
+
     target = float(target)
     if not (0.0 <= target <= 100.0):
         return jsonify({"error": "target_grade fuera de rango (0-100)"}), 400
@@ -190,13 +265,17 @@ def grade_contour(course_code):
         course = load_course(course_code)
     except KeyError:
         return jsonify({"error": "Curso no encontrado"}), 404
-    
+
     course_raw = course
     course = copy.deepcopy(course_raw)
 
     expected_len = len(course["context"]["values"])
     if len(grades) != expected_len:
-        return jsonify({"error": f"Longitud inconsistente: grades debe tener {expected_len} elementos"}), 400
+        return jsonify(
+            {
+                "error": f"Longitud inconsistente: grades debe tener {expected_len} elementos"
+            }
+        ), 400
 
     if len(x_indices) == 0 or len(y_indices) == 0:
         return jsonify({"error": "x_indices e y_indices no pueden ser vacíos"}), 400
@@ -214,17 +293,21 @@ def grade_contour(course_code):
         return jsonify({"error": "Índices solapados entre x_indices e y_indices"}), 400
 
     axis_set = set(x_indices) | set(y_indices)
-    
+
     base_values = []
     for idx, g in enumerate(grades):
         if g is None:
             if idx not in axis_set:
-                return jsonify({"error": f"grades[{idx}] es null pero no pertenece a X/Y"}), 400
-            base_values.append(0.0) # si es null, lo llenamos con 0 temporalmente, 
+                return jsonify(
+                    {"error": f"grades[{idx}] es null pero no pertenece a X/Y"}
+                ), 400
+            base_values.append(0.0)  # si es null, lo llenamos con 0 temporalmente,
             continue
 
         if not isinstance(g, (int, float)) or not math.isfinite(float(g)):
-            return jsonify({"error": f"grades[{idx}] inválida: debe ser number o null"}), 400
+            return jsonify(
+                {"error": f"grades[{idx}] inválida: debe ser number o null"}
+            ), 400
 
         g = float(g)
         if not (0.0 <= g <= 100.0):
@@ -236,9 +319,3 @@ def grade_contour(course_code):
     xi, yi = find_curva_nivel(course, x_indices, y_indices, target, n=101)
 
     return jsonify({"x": xi.tolist(), "y": yi.tolist()}), 200
-
-
-
-    
-
-

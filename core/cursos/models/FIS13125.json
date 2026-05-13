@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "code": "FIS13125",
+    "name": "CALOR Y ONDAS",
+    "icon": {
+      "gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+      "svg": "mecanica"
+    }
+  },
+  "evaluations": [
+    "Certamen 1",
+    "Certamen 2",
+    "Certamen 3",
+    "Control 1",
+    "Control 2",
+    "Control 3",
+    "Control 4",
+    "Control 5",
+    "Laboratorio 1",
+    "Control Lab 1",
+    "Laboratorio 2",
+    "Control Lab 2",
+    "Laboratorio 3",
+    "Control Lab 3",
+    "Laboratorio 4",
+    "Control Lab 4",
+    "Laboratorio 5",
+    "Control Lab 5",
+    "Laboratorio 6",
+    "Control Lab 6",
+    "Laboratorio 7",
+    "Control Lab 7",
+    "Laboratorio 8",
+    "Control Lab 8",
+    "Prueba Escrita lab",
+    "Actividad Practica"
+  ],
+  "context": {
+    "values": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "templates": {
+      "Certamen": [
+        0,
+        1,
+        2
+      ],
+      "Control": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "Laboratorio": [
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22
+      ],
+      "Control Lab": [
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        23
+      ],
+      "Prueba Escrita lab": [
+        24
+      ],
+      "Actividad Practica": [
+        25
+       ]
+    }
+  },
+  "AST": {
+    "op": "linear_comb",
+    "weights": [
+      0.75,
+      0.25
+    ],
+    "args": [
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref",
+            "id": 0
+          },
+          {
+            "op": "ref",
+            "id": 1
+          },
+          {
+            "op": "ref",
+            "id": 2
+          },
+          {
+            "op": "mean",
+            "args": [
+              {
+                "op": "ref_template",
+                "template": "Control"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "op": "linear_comb",
+        "weights": [
+          0.6,
+          0.4
+        ],
+        "args": [
+          {
+            "op": "linear_comb",
+            "weights": [
+              0.2,
+              0.8
+            ],
+            "args": [
+              {
+                "op": "mean",
+                "args": [
+                  {
+                    "op": "ref_template",
+                    "template": "Control Lab"
+                  }
+                ]
+              },
+              {
+                "op": "mean",
+                "args": [
+                  {
+                    "op": "ref_template",
+                    "template": "Laboratorio"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "mean",
+            "args": [
+              {
+                "op": "ref",
+                "id": 24
+              },
+              {
+                "op": "ref",
+                "id": 25
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

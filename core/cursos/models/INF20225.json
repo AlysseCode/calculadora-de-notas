@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "code": "INF20225",
+    "name": "Matematicas Discretas",
+    "icon": {
+      "gradient": "linear-gradient(90deg,rgba(221, 20, 247, 1) 0%, rgba(165, 83, 237, 1) 100%)",
+      "svg": "codigo"
+    }
+  },
+  "evaluations": [
+    "Certamen 1",
+    "Certamen 2",
+    "Certamen 3",
+    "Control 1",
+    "Control 2",
+    "Control 3"
+  ],
+  "context": {
+    "values": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "templates": {
+      "Certamen": [
+        0,
+        1,
+        2
+      ],
+      "Control": [
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "AST": {
+    "op": "linear_comb",
+    "weights": [
+      0.7,
+      0.3
+    ],
+    "args": [
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref_template",
+            "template": "Certamen"
+          }
+        ]
+      },
+      {
+        "op": "mean",
+        "args": [
+          {
+            "op": "ref_template",
+            "template": "Control"
+          }
+        ]
+      }
+    ]
+  }
+}
